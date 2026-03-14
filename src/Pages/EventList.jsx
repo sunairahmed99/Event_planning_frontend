@@ -21,9 +21,9 @@ const EventList = () => {
         location: '',
         guests: '',
         tag: 'Classic',
-        images: [null, null, null, null, null]
+        images: []
     });
-    const [imagePreviews, setImagePreviews] = useState([null, null, null, null, null]);
+    const [imagePreviews, setImagePreviews] = useState([]);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
@@ -64,9 +64,9 @@ const EventList = () => {
                 location: '',
                 guests: '',
                 tag: 'Classic',
-                images: [null, null, null, null, null]
+                images: []
             });
-            setImagePreviews([null, null, null, null, null]);
+            setImagePreviews([]);
         }
     };
 
@@ -85,34 +85,36 @@ const EventList = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleImageChange = (index, file) => {
-        if (!file) return;
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
 
-        const newImages = [...formData.images];
-        newImages[index] = file;
+        const newImages = [...formData.images, ...files];
+        const newPreviews = [...imagePreviews, ...files.map(file => URL.createObjectURL(file))];
+
         setFormData(prev => ({ ...prev, images: newImages }));
+        setImagePreviews(newPreviews);
+    };
 
-        // Create preview
-        const reader = new FileReader();
-        const newPreviews = [...imagePreviews];
+    const removeImage = (index) => {
+        const newImages = formData.images.filter((_, i) => i !== index);
+        const newPreviews = imagePreviews.filter((_, i) => i !== index);
         
-        // Revoke old blob if it exists
-        if (newPreviews[index] && newPreviews[index].startsWith('blob:')) {
-            URL.revokeObjectURL(newPreviews[index]);
+        if (imagePreviews[index].startsWith('blob:')) {
+            URL.revokeObjectURL(imagePreviews[index]);
         }
-
-        const previewUrl = URL.createObjectURL(file);
-        newPreviews[index] = previewUrl;
+        
+        setFormData(prev => ({ ...prev, images: newImages }));
         setImagePreviews(newPreviews);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Check if we have 5 images (either files or existing URLs)
+        // Check if we have at least 1 image
         const totalImages = formData.images.filter(img => img !== null).length;
-        if (totalImages < 5) {
-            alert('Please provide all 5 images');
+        if (totalImages === 0) {
+            alert('Please provide at least one image');
             return;
         }
 
@@ -458,16 +460,57 @@ const EventList = () => {
 
                                 <div style={{ marginTop: '20px' }}>
                                     <label style={{ display: 'block', marginBottom: '15px', fontWeight: '800', fontSize: '1.1rem', color: '#60a5fa' }}>
-                                        Event Gallery (5 Photos Required)
+                                        Event Gallery
                                     </label>
                                     <div style={{ 
                                         display: 'grid', 
                                         gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
                                         gap: '15px' 
                                     }}>
-                                        {Array.from({ length: 5 }).map((_, index) => (
+                                        {imagePreviews.map((preview, index) => (
                                             <div key={index} style={{ position: 'relative' }}>
                                                 <div style={{
+                                                    width: '100%',
+                                                    aspectRatio: '1',
+                                                    borderRadius: '12px',
+                                                    border: '2px solid rgba(59, 130, 246, 0.3)',
+                                                    background: 'rgba(255,255,255,0.02)',
+                                                    overflow: 'hidden',
+                                                    position: 'relative',
+                                                }}>
+                                                    <img 
+                                                        src={preview} 
+                                                        alt={`Preview ${index + 1}`} 
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeImage(index)}
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: '5px',
+                                                            right: '5px',
+                                                            background: 'rgba(239, 68, 68, 0.8)',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '50%',
+                                                            width: '24px',
+                                                            height: '24px',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center'
+                                                        }}
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        
+                                        {imagePreviews.length < 10 && (
+                                            <div 
+                                                style={{
                                                     width: '100%',
                                                     aspectRatio: '1',
                                                     borderRadius: '12px',
@@ -478,52 +521,27 @@ const EventList = () => {
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     cursor: 'pointer',
-                                                    overflow: 'hidden',
-                                                    position: 'relative',
                                                     transition: '0.3s'
                                                 }}
-                                                onClick={() => document.getElementById(`file-input-${index}`).click()}
+                                                onClick={() => document.getElementById('file-input-bulk').click()}
                                                 onMouseOver={(e) => e.currentTarget.style.borderColor = '#3b82f6'}
                                                 onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
-                                                >
-                                                    {imagePreviews[index] ? (
-                                                        <img 
-                                                            src={imagePreviews[index]} 
-                                                            alt={`Preview ${index + 1}`} 
-                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                        />
-                                                    ) : (
-                                                        <>
-                                                            <ImageIcon size={24} color="#94a3b8" />
-                                                            <span style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '5px' }}>Photo {index + 1}</span>
-                                                        </>
-                                                    )}
-                                                    <div style={{
-                                                        position: 'absolute',
-                                                        bottom: '0',
-                                                        left: '0',
-                                                        right: '0',
-                                                        background: 'rgba(0,0,0,0.5)',
-                                                        color: 'white',
-                                                        fontSize: '10px',
-                                                        textAlign: 'center',
-                                                        padding: '2px 0'
-                                                    }}>
-                                                        {formData.images[index] instanceof File ? 'NEW' : (formData.images[index] ? 'SAVED' : 'EMPTY')}
-                                                    </div>
-                                                </div>
-                                                <input
-                                                    type="file"
-                                                    id={`file-input-${index}`}
-                                                    accept="image/*"
-                                                    onChange={(e) => handleImageChange(index, e.target.files[0])}
-                                                    style={{ display: 'none' }}
-                                                />
+                                            >
+                                                <Plus size={24} color="#94a3b8" />
+                                                <span style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '5px' }}>Add Photo</span>
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
+                                    <input
+                                        type="file"
+                                        id="file-input-bulk"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={handleImageChange}
+                                        style={{ display: 'none' }}
+                                    />
                                     <p style={{ marginTop: '10px', fontSize: '0.85rem', color: '#94a3b8' }}>
-                                        * Click on a box to upload or change an image.
+                                        * You can upload up to 10 images.
                                     </p>
                                 </div>
 
