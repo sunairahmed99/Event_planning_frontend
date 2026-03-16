@@ -228,7 +228,7 @@ const Home = () => {
             style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', marginBottom: '1.5rem', fontWeight: 800, lineHeight: 1.1 }}
           >
             Crafting <span className="gradient-text">Pure Magic</span> <br /> 
-            <span style={{ fontSize: '0.5em', fontWeight: 500, display: 'block', marginTop: '1rem', letterSpacing: '4px', textTransform: 'uppercase' }}>For Your Dream Moments</span>
+            <span style={{ fontSize: '0.5em', fontWeight: 500, display: 'block', marginTop: '1rem', letterSpacing: '4px', textTransform: 'uppercase', color: 'white' }}>For Your Dream Moments</span>
           </motion.h2>
           <motion.div
             className="hero-buttons"

@@ -27,7 +27,7 @@ const AuthForm = () => {
         newPassword: '',
         confirmNewPassword: ''
     });
-    
+
     const resetForm = () => {
         setFormData({
             name: '',
@@ -118,7 +118,7 @@ const AuthForm = () => {
 
                     if (registerUser.fulfilled.match(resultAction)) {
                         setFormState('verify');
-                        resetForm();
+                        setFormData(prev => ({ ...prev, password: '', confirmPassword: '', phone: '', otp: '' }));
                     }
                     return;
                 }
@@ -301,7 +301,7 @@ const AuthForm = () => {
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleChange}
-                                    placeholder="+1 234 567 8900"
+                                    placeholder="11 digit number"
                                 />
                                 {errors.phone && <span className="error">{errors.phone}</span>}
                             </div>
@@ -431,8 +431,8 @@ const AuthForm = () => {
                         <div className="auth-separator">
                             <span>OR</span>
                         </div>
-                        <a 
-                            href={`${API_BASE_URL}/user/auth/google`} 
+                        <a
+                            href={`${API_BASE_URL}/user/auth/google`}
                             className="google-btn"
                         >
                             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />

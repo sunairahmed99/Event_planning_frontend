@@ -93,7 +93,7 @@ const Contact = () => {
                     transition={{ duration: 0.8 }}
                 >
                     <h1>Get In <span className="gradient-text">Touch</span></h1>
-                    <p>Let's start planning your dream event together</p>
+                    <p style={{ color: 'black' }}>Let's start planning your dream event together</p>
                 </motion.div>
             </section>
 
@@ -232,7 +232,7 @@ const Contact = () => {
                                         type="tel"
                                         id="phone"
                                         name="phone"
-                                        placeholder="+1 (555) 000-0000"
+                                        placeholder="11 digit number"
                                         value={formData.phone}
                                         onChange={handleFormChange}
                                         required
