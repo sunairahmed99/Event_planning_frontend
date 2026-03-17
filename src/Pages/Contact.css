@@ -214,10 +214,23 @@
     border: 2px solid rgba(183, 110, 121, 0.4);
     border-radius: var(--radius-md);
     background: var(--color-light-gray) !important;
-    color: var(--color-text);
+    color: #111 !important;
     font-family: var(--font-body);
     font-size: 1rem;
     transition: all var(--transition-base);
+}
+
+.form-group input::-webkit-input-placeholder,
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #888;
+}
+
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #111 !important;
+    box-shadow: 0 0 0px 1000px #f0f0f0 inset !important;
 }
 
 /* Global input styles now handled in index.css */

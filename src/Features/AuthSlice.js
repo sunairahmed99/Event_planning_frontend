@@ -153,6 +153,18 @@ const authSlice = createSlice({
             .addCase(fetchMe.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(verifyEmail.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(verifyEmail.fulfilled, (state) => {
+                state.loading = false;
+                state.error = null;
+            })
+            .addCase(verifyEmail.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });

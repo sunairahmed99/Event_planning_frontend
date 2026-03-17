@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, registerUser, verifyEmail, clearError as clearAuthError } from '../../Features/AuthSlice';
 import axios from 'axios';
@@ -11,8 +11,16 @@ const AuthForm = () => {
     const dispatch = useDispatch();
     const { loading: authLoading, error: authError } = useSelector((state) => state.auth);
 
-    // Form states: 'login', 'register', 'forgot', 'reset', 'verify'
-    const [formState, setFormState] = useState('login');
+    const location = useLocation();
+    
+    // Sync form state with URL query param 'mode'
+    const queryParams = new URLSearchParams(location.search);
+    const mode = queryParams.get('mode') || 'login';
+    const formState = mode;
+
+    const setFormState = (newMode) => {
+        navigate(`${location.pathname}?mode=${newMode}`, { replace: true });
+    };
 
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -117,6 +125,8 @@ const AuthForm = () => {
                     const resultAction = await dispatch(registerUser(data));
 
                     if (registerUser.fulfilled.match(resultAction)) {
+                        // Clear any previous errors before showing verify page
+                        dispatch(clearAuthError());
                         setFormState('verify');
                         setFormData(prev => ({ ...prev, password: '', confirmPassword: '', phone: '', otp: '' }));
                     }
@@ -170,16 +180,19 @@ const AuthForm = () => {
     };
 
     const switchToLogin = () => {
+        dispatch(clearAuthError());
         setFormState('login');
         resetForm();
     };
 
     const switchToRegister = () => {
+        dispatch(clearAuthError());
         setFormState('register');
         resetForm();
     };
 
     const switchToForgot = () => {
+        dispatch(clearAuthError());
         setFormState('forgot');
         resetForm();
     };
@@ -406,7 +419,9 @@ const AuthForm = () => {
                     {/* VERIFY EMAIL FORM */}
                     {formState === 'verify' && (
                         <>
-                            <p className="form-description">We've sent a verification code to your email. Please enter it below.</p>
+                            <p className="form-description">
+                                We've sent a verification code to <strong>{formData.email}</strong>. Please check your email and enter the code below.
+                            </p>
                             <div className="form-group">
                                 <label>Verification Code</label>
                                 <input

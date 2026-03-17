@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children, adminOnly = false, inverse = false }) => {
     const { user, isAuthenticated, loading } = useSelector((state) => state.auth);
     const location = useLocation();
 
-    if (loading) {
+    if (loading && !inverse) {
         return (
             <div className="loading-container" style={{ height: '50vh' }}>
                 <div className="premium-loader"></div>
