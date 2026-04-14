@@ -20,6 +20,7 @@ import AdminChat from './Pages/AdminChat';
 import ChatWidget from './Components/Chat/ChatWidget';
 import WhatsAppWidget from './Components/Chat/WhatsAppWidget';
 import ProtectedRoute from './Components/Auth/ProtectedRoute';
+import ScrollToTop from './Components/ScrollToTop';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchMe } from './Features/AuthSlice';
@@ -43,6 +44,7 @@ export default function App() {
 
   return (
         <Router>
+          <ScrollToTop />
           <Routes>
           {/* Admin Routes */}
           <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
