@@ -42,6 +42,40 @@ export default function App() {
     }
   }, [dispatch]);
 
+  // Production Level Protection: Disable Right Click and Dev Tools Shortcuts
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+    };
+
+    const handleKeyDown = (e) => {
+      // Disable F12
+      if (e.key === 'F12') {
+        e.preventDefault();
+      }
+      // Disable Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+        e.preventDefault();
+      }
+      // Disable Ctrl+U (View Source)
+      if (e.ctrlKey && e.key === 'u') {
+        e.preventDefault();
+      }
+      // Disable Ctrl+S (Save Page)
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
         <Router>
           <ScrollToTop />
